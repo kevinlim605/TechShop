@@ -1,11 +1,8 @@
 import React from 'react';
+import Main from './components/Main';
 
 function App() {
-  return (
-    <>
-      <h1>Welcome to TechShop</h1>
-    </>
-  );
+  return <Main />;
 }
 
 export default App;
