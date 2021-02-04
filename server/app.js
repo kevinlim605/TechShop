@@ -5,8 +5,8 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import products from './initial-data/products.js';
 import dotenv from 'dotenv';
-import connectDB from './config/db.js';
 import colors from 'colors';
+import connectDB from './config/db.js';
 
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
