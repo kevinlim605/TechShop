@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import products from './initial-data/products.js';
 import dotenv from 'dotenv';
+import connectDB from './config/db.js';
+import colors from 'colors';
 
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
@@ -12,13 +14,16 @@ import usersRouter from './routes/users.js';
 // .env file where we can define any API keys, secret tokens, etc.
 dotenv.config();
 
+// connecting our mongodb database with our node server using mongoose we configured
+// in our config folder
+connectDB();
+
 // in node.js modules, __dirname and __filename don't exist, so we must
 // use this architecture. (subject to change)
 // https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
 const __dirname = path.resolve();
 
 var app = express();
-// app.listen(5000, console.log('Server running on port 5000'));
 
 app.get('/', (req, res) => {
   res.send('API is running...');

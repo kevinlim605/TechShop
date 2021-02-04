@@ -28,7 +28,9 @@ var server = http.createServer(app);
 
 server.listen(
   port,
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
+  console.log(
+    `Server Running in ${process.env.NODE_ENV} Mode on Port ${port}`.yellow.bold
+  )
 );
 server.on('error', onError);
 server.on('listening', onListening);
