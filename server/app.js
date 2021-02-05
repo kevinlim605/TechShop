@@ -11,7 +11,7 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 // my routes
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
-import productRouter from './routes/productRouter.js';
+import productRouter from './routes/product.js';
 
 // .env file where we can define any API keys, secret tokens, etc.
 dotenv.config();

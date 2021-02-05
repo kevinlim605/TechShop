@@ -3,7 +3,7 @@ import { Col, Row } from 'react-bootstrap';
 import axios from 'axios';
 import Product from '../components/Product';
 
-const HomeScreen = () => {
+const HomePage = () => {
   const [products, setProducts] = useState([]);
 
   // useEffect() hook is the equivalent of componentDidMount() life cycle method. It takes a function as a parameter.
@@ -38,4 +38,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default HomePage;

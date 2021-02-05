@@ -12,7 +12,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import axios from 'axios';
 import Rating from '../components/Rating';
 
-const Product = ({ match }) => {
+const ProductPage = ({ match }) => {
   const [product, setProduct] = useState([]);
 
   useEffect(() => {
@@ -84,4 +84,4 @@ const Product = ({ match }) => {
   );
 };
 
-export default Product;
+export default ProductPage;
