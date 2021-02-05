@@ -3,13 +3,15 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import products from './initial-data/products.js';
 import dotenv from 'dotenv';
 import colors from 'colors';
 import connectDB from './config/db.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
+// my routes
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
+import productRouter from './routes/productRouter.js';
 
 // .env file where we can define any API keys, secret tokens, etc.
 dotenv.config();
@@ -25,20 +27,6 @@ const __dirname = path.resolve();
 
 var app = express();
 
-app.get('/', (req, res) => {
-  res.send('API is running...');
-  console.log('server is running on port 5000');
-});
-
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
-
-app.get('/api/products/:id', (req, res) => {
-  const product = products.find((p) => p._id === req.params.id);
-  res.json(product);
-});
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -49,8 +37,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// my routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/api/products', productRouter);
+
+// my own catch 404 error handler middleware
+
+app.use(notFound);
+
+// my own error handler middleware
+app.use(errorHandler);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
