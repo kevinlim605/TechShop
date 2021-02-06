@@ -5,9 +5,9 @@ export const productsReducer = (state = { products: [] }, action) => {
     case ActionTypes.PRODUCTS_REQUEST:
       return { loading: true, products: [] };
     case ActionTypes.PRODUCTS_SUCCESS:
-      return { loading: false, products: [action.payload] };
+      return { loading: false, products: action.payload };
     case ActionTypes.PRODUCTS_FAILED:
-      return { loading: false, err: action.payload };
+      return { loading: false, error: action.payload };
     default:
       return state;
   }
