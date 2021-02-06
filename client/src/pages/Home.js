@@ -4,19 +4,19 @@ import { Col, Row } from 'react-bootstrap';
 import Product from '../components/Product';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { fetchProducts } from '../actions/products';
+import { fetchProductList } from '../actions/products';
 
 const HomePage = () => {
   // useDispatch is used to call an action, similar to mapDispatchToProps lifecycle method
   const dispatch = useDispatch();
 
   // useSelector is used to to select parts of the state, similar to mapStateToProps lifecycle method
-  const productList = useSelector((state) => state.products);
+  const productList = useSelector((state) => state.productList);
   const { loading, error, products } = productList;
 
   // useEffect is used similar to componentDidMount lifecycle method
   useEffect(() => {
-    dispatch(fetchProducts());
+    dispatch(fetchProductList());
   }, [dispatch]); // must pass dispatch as a dependency as the second argument of useEffect in order to use useDispatch()
 
   return (
