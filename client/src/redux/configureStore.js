@@ -5,8 +5,8 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {
   productListReducer,
   productDetailsReducer,
-  clearProductDetailsReducer,
 } from '../reducers/products';
+import { cartReducer } from '../reducers/cart';
 
 // const reducer = combineReducers({});
 
@@ -21,12 +21,22 @@ import {
 // );
 
 const ConfigureStore = () => {
-  const initialState = {};
+  // Here we check for any cart items in local storage. If cart items exist in local storage,
+  // we parse the JSON string into a javascript object and store it in our const cartItemsFromStorage.
+  // Then we pass it into initialState
+  const cartItemsFromStorage = localStorage.getItem('cartItems')
+    ? JSON.parse(localStorage.getItem('cartItems'))
+    : [];
+  const initialState = {
+    cart: {
+      cartItems: cartItemsFromStorage,
+    },
+  };
   const store = createStore(
     combineReducers({
       productList: productListReducer,
       productDetails: productDetailsReducer,
-      // clearProductDetails: clearProductDetailsReducer,
+      cart: cartReducer,
     }),
     initialState,
     composeWithDevTools(applyMiddleware(thunk, logger))

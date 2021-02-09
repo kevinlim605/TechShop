@@ -5,6 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import HomePage from '../pages/Home';
 import ProductPage from '../pages/Product';
+import CartPage from '../pages/Cart';
 
 const Main = () => {
   return (
@@ -14,6 +15,10 @@ const Main = () => {
         <Container>
           <Route exact path="/" component={HomePage} />
           <Route path="/products/:id" component={ProductPage} />
+          {/* ? in path means optional. This is because sometimes we don't need an 
+          object id to access cart (meaning we acccess cart page from home screen and not 
+          // redirected from addToCart handler from a product page) */}
+          <Route path="/cart/:id?" component={CartPage} />
         </Container>
       </main>
       <Footer />
