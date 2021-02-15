@@ -43,7 +43,6 @@ app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
 
 // my own catch 404 error handler middleware
-
 app.use(notFound);
 
 // my own error handler middleware

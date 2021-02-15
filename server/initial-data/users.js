@@ -5,7 +5,7 @@ const users = [
     name: 'Admin User',
     email: 'admin@example.com',
     // we use bcrypt.hashSync to pass in plain text password string as first argument, then
-    // the number of rounds as the second arugment. The higher the rounds, the more secure
+    // the number of rounds as the second argument. The higher the rounds, the more secure
     // 10 is the default.
     password: bcrypt.hashSync('123456', 10),
     isAdmin: true,
