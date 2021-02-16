@@ -11,6 +11,7 @@ import {
   userLoginReducer,
   userRegisterReducer,
   userDetailsReducer,
+  userUpdateProfileReducer,
 } from '../reducers/users';
 
 // const reducer = combineReducers({});
@@ -37,9 +38,14 @@ const ConfigureStore = () => {
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null;
 
+  const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
+    ? JSON.parse(localStorage.getItem('shippingAddress'))
+    : {};
+
   const initialState = {
     cart: {
       cartItems: cartItemsFromStorage,
+      shippingAddress: shippingAddressFromStorage,
     },
     userLogin: {
       userInfo: userInfoFromStorage,
@@ -53,6 +59,7 @@ const ConfigureStore = () => {
       userLogin: userLoginReducer,
       userRegister: userRegisterReducer,
       userDetails: userDetailsReducer,
+      userUpdateProfile: userUpdateProfileReducer,
     }),
     initialState,
     composeWithDevTools(applyMiddleware(thunk, logger))
