@@ -12,6 +12,7 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import indexRouter from './routes/index.js';
 import userRouter from './routes/user.js';
 import productRouter from './routes/product.js';
+import orderRouter from './routes/order.js';
 
 // .env file where we can define any API keys, secret tokens, etc.
 dotenv.config();
@@ -41,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
+app.use('/api/orders', orderRouter);
 
 // my own catch 404 error handler middleware
 app.use(notFound);

@@ -52,6 +52,10 @@ const Cart = ({ match, location, history }) => {
     history.push('/login?redirect=shipping');
   };
 
+  const addDecimals = (num) => {
+    return (Math.round(num * 100) / 100).toFixed(2);
+  };
+
   return (
     <Row>
       <Col md={8}>
@@ -69,7 +73,7 @@ const Cart = ({ match, location, history }) => {
                     <Image src={item.image} alt={item.name} fluid rounded />
                   </Col>
                   <Col md={3}>
-                    <Link to={`/product/${item.product}`}>{item.name}</Link>
+                    <Link to={`/products/${item.product}`}>{item.name}</Link>
                   </Col>
                   <Col md={2}>${item.price}</Col>
                   <Col md={2}>
@@ -111,9 +115,11 @@ const Cart = ({ match, location, history }) => {
                 items
               </h2>
               $
-              {cartItems
-                .reduce((acc, item) => acc + item.qty * item.price, 0)
-                .toFixed(2)}
+              {addDecimals(
+                cartItems
+                  .reduce((acc, item) => acc + item.qty * item.price, 0)
+                  .toFixed(2)
+              )}
             </ListGroupItem>
             <ListGroupItem>
               <Button

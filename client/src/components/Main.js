@@ -11,6 +11,8 @@ import RegisterPage from '../pages/Register';
 import ProfilePage from '../pages/Profile';
 import ShippingPage from '../pages/Shipping';
 import PaymentPage from '../pages/Payment';
+import PlaceOrderPage from '../pages/PlaceOrder';
+import OrderPage from '../pages/Order';
 
 const Main = () => {
   return (
@@ -20,6 +22,8 @@ const Main = () => {
         <Container>
           <Route path="/shipping" component={ShippingPage} />
           <Route path="/payment" component={PaymentPage} />
+          <Route path="/placeorder" component={PlaceOrderPage} />
+          <Route path="/order/:id" component={OrderPage} />
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/profile" component={ProfilePage} />

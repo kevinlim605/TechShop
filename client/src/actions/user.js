@@ -147,7 +147,10 @@ export const userDetailsSuccess = (data) => ({
 
 export const userDetailsFailed = (error) => ({
   type: ActionTypes.USER_DETAILS_FAILED,
-  payload: error,
+  payload:
+    error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message,
 });
 
 export const updateUserProfile = (user) => async (dispatch, getState) => {
@@ -202,7 +205,10 @@ export const userUpdateProfileSuccess = (data) => ({
 
 export const userUpdateProfileFailed = (error) => ({
   type: ActionTypes.USER_UPDATE_PROFILE_FAILED,
-  payload: error,
+  payload:
+    error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message,
 });
 
 export const userUpdateProfileReset = () => ({
