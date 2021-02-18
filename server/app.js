@@ -44,6 +44,11 @@ app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);
 
+// PayPal route
+app.get('/api/config/paypal', (req, res) =>
+  res.send(process.env.PAYPAL_CLIENT_ID)
+);
+
 // my own catch 404 error handler middleware
 app.use(notFound);
 

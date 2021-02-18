@@ -1,18 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';
-import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { getOrderDetails } from '../actions/order';
+import { getOrderDetails, payOrder, orderPayReset } from '../actions/order';
 
 const Order = ({ match }) => {
   // order id from url
   const orderId = match.params.id;
 
+  // State
+  const [sdkReady, setSdkReady] = useState(false);
+
   // mapStateToProps
   const orderDetails = useSelector((state) => state.orderDetails);
-  const { loading, error, order } = orderDetails;
+  const { order, loading, error } = orderDetails;
+  const orderPay = useSelector((state) => state.orderPay);
+  // We already defined loading above so we can rename our destructured consts like this
+  // So we get consts loadingPay and successPay
+  const { loading: loadingPay, success: successPay } = orderPay;
 
   // mapDispatchToProps
   const dispatch = useDispatch();
@@ -28,14 +37,58 @@ const Order = ({ match }) => {
       order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
     );
   }
+
   // componentDidMount
   useEffect(() => {
-    // check for the order and also if orderId matches the ID in the url
-    // if not, then we dispatch getOrderDetails to fetch the most recent order
-    if (!order || order._id !== orderId) {
+    const addPayPalScript = async () => {
+      // destructure to get our client ID from paypal
+      const { data: clientId } = await axios.get('/api/config/paypal');
+      // create a script dom element
+      const script = document.createElement('script');
+      // give it a type attribute 'text/javascript'
+      script.type = 'text/javascript';
+      // give it a src attribute taken from paypal's website for sdk script plus our client ID
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
+      // give it an async attribute of true
+      script.async = true;
+      // give it an onload attribute (js function that executes immediately after page has been loaded)
+      // and make that function invoke the useState function to set the sdkReady state to true.
+      // (let's us know when the Software Development Kit that PayPal gives us is ready)
+      script.onload = () => {
+        setSdkReady(true);
+      };
+      // appends our script element right before the close tag of our body element
+      document.body.appendChild(script);
+    };
+
+    // check if order doesn't exist or if orderId does not match the ID in the url
+    // or if the pay was successful or if the pay was delivered.
+    // if so, then we dispatch to get our most recent order details
+    if (!order || successPay || order._id !== orderId) {
+      // dispatch our orderPayReset() action so that once we pay, it will stop refreshing
+      dispatch(orderPayReset());
+      // dispatch getOrderDetails to fetch the most recent order
       dispatch(getOrderDetails(orderId));
+
+      // we check if order isn't paid.
+      // if so, then we'll add our paypal script
+    } else if (!order.isPaid) {
+      // window is a global variable, representing the window in which the script is running.
+      // We can check if the paypal script is not there by using window.paypal.
+      // if so, we'll add our paypal script
+      if (!window.paypal) {
+        addPayPalScript();
+        // otherwise, we'll set the sdkReady to true
+      } else {
+        setSdkReady(true);
+      }
     }
-  }, [dispatch, order, orderId]);
+  }, [dispatch, orderId, successPay, order]);
+
+  const successPaymentHandler = (paymentResult) => {
+    console.log(paymentResult);
+    dispatch(payOrder(orderId, paymentResult));
+  };
 
   return loading ? (
     <Loader />
@@ -147,6 +200,19 @@ const Order = ({ match }) => {
                   <Col>${addDecimals(order.totalPrice)}</Col>
                 </Row>
               </ListGroup.Item>
+              {!order.isPaid && (
+                <ListGroup.Item>
+                  {loadingPay && <Loader />}
+                  {!sdkReady ? (
+                    <Loader />
+                  ) : (
+                    <PayPalButton
+                      amount={order.totalPrice}
+                      onSuccess={successPaymentHandler}
+                    />
+                  )}
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>
