@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as ActionTypes from '../actiontypes/users';
+import { ORDER_LIST_MY_RESET } from '../actiontypes/order';
 
 export const login = (email, password) => async (dispatch) => {
   try {
@@ -54,10 +55,20 @@ export const userLoginFailed = (error) => ({
 export const logout = () => (dispatch) => {
   localStorage.removeItem('userInfo');
   dispatch(userLogout());
+  dispatch(userDetailsReset());
+  dispatch(orderListMyReset());
 };
 
 export const userLogout = () => ({
   type: ActionTypes.USER_LOGOUT,
+});
+
+export const userDetailsReset = () => ({
+  type: ActionTypes.USER_DETAILS_RESET,
+});
+
+export const orderListMyReset = () => ({
+  type: ORDER_LIST_MY_RESET,
 });
 
 export const register = (name, email, password) => async (dispatch) => {
