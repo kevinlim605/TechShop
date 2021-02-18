@@ -13,6 +13,7 @@ import ShippingPage from '../pages/Shipping';
 import PaymentPage from '../pages/Payment';
 import PlaceOrderPage from '../pages/PlaceOrder';
 import OrderPage from '../pages/Order';
+import UsersPage from '../pages/Users';
 
 const Main = () => {
   return (
@@ -32,6 +33,7 @@ const Main = () => {
           object id to access cart (meaning we acccess cart page from home screen and not 
           // redirected from addToCart handler from a product page) */}
           <Route path="/cart/:id?" component={CartPage} />
+          <Route path="/admin/userlist" component={UsersPage} />
           <Route exact path="/" component={HomePage} />
         </Container>
       </main>

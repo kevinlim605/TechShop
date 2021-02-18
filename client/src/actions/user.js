@@ -57,6 +57,7 @@ export const logout = () => (dispatch) => {
   dispatch(userLogout());
   dispatch(userDetailsReset());
   dispatch(orderListMyReset());
+  dispatch(userListReset());
 };
 
 export const userLogout = () => ({
@@ -69,6 +70,10 @@ export const userDetailsReset = () => ({
 
 export const orderListMyReset = () => ({
   type: ORDER_LIST_MY_RESET,
+});
+
+export const userListReset = () => ({
+  type: ActionTypes.USER_LIST_RESET,
 });
 
 export const register = (name, email, password) => async (dispatch) => {
@@ -225,4 +230,54 @@ export const userUpdateProfileFailed = (error) => ({
 export const userUpdateProfileReset = () => ({
   type: ActionTypes.USER_UPDATE_PROFILE_RESET,
   payload: {},
+});
+
+export const listUsers = () => async (dispatch, getState) => {
+  try {
+    // dispatch our request
+    dispatch(userListRequest());
+
+    // getState allows us to get our state. We destructure twice to get access to the logged in
+    // user's object
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    // We can now use userInfo which we destructured from getState to get the bearer token from
+    // userInfo so we can make the appropriate GET request without triggering the auth middleware
+    // from the backend.
+    const config = {
+      headers: {
+        // Authorization key needs no quotes
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    // We'll update the profile data in the backend by making a put request, and store the
+    // the response in data which we destructure. (the put request will send us a response object
+    // with the updated information)
+    const { data } = await axios.get(`/api/users`, config);
+
+    // we'll dispatch our success action with the data as our payload
+    dispatch(userListSuccess(data));
+  } catch (error) {
+    dispatch(userListFailed(error));
+  }
+};
+
+export const userListRequest = () => ({
+  type: ActionTypes.USER_LIST_REQUEST,
+});
+
+export const userListSuccess = (data) => ({
+  type: ActionTypes.USER_LIST_SUCCESS,
+  payload: data,
+});
+
+export const userListFailed = (error) => ({
+  type: ActionTypes.USER_LIST_FAILED,
+  payload:
+    error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message,
 });
