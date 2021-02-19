@@ -4,7 +4,7 @@ import { Table, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { listUsers } from '../actions/user';
+import { listUsers, deleteUser } from '../actions/user';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
@@ -16,12 +16,18 @@ const Users = ({ history }) => {
   const { loading, error, users } = userList;
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+  const userDelete = useSelector((state) => state.userDelete);
+  const { success: successDelete } = userDelete;
   // mapDispatchToProps
   const dispatch = useDispatch();
 
   // deleteHandler
   const deleteHandler = (id) => {
-    console.log('hello');
+    // window.confirm is an api that displays a modal dialog with an optional message
+    // Hitting okay will return true and hitting cancel will return false
+    if (window.confirm('Are you sure')) {
+      dispatch(deleteUser(id));
+    }
   };
 
   // componentDidMount
@@ -33,7 +39,7 @@ const Users = ({ history }) => {
     } else {
       history.push('/login');
     }
-  }, [dispatch, history, userInfo]);
+  }, [dispatch, history, userInfo, successDelete]);
   return (
     <>
       <h1>Users</h1>
@@ -68,7 +74,7 @@ const Users = ({ history }) => {
                   )}
                 </td>
                 <td>
-                  <LinkContainer to={`/user/${user._id}/edit`}>
+                  <LinkContainer to={`/admin/user/${user._id}/edit`}>
                     <Button variant="light" className="btn-sm">
                       <EditIcon />
                     </Button>

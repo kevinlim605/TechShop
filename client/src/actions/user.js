@@ -253,9 +253,9 @@ export const listUsers = () => async (dispatch, getState) => {
       },
     };
 
-    // We'll update the profile data in the backend by making a put request, and store the
-    // the response in data which we destructure. (the put request will send us a response object
-    // with the updated information)
+    // We'll retrieve the users documents in the backend by making a get request, and store the
+    // the response in data which we destructure. (the get request will send us a response object
+    // with the list of user documents)
     const { data } = await axios.get(`/api/users`, config);
 
     // we'll dispatch our success action with the data as our payload
@@ -280,4 +280,110 @@ export const userListFailed = (error) => ({
     error.response && error.response.data.message
       ? error.response.data.message
       : error.message,
+});
+
+export const deleteUser = (id) => async (dispatch, getState) => {
+  try {
+    // dispatch our request
+    dispatch(userDeleteRequest());
+
+    // getState allows us to get our state. We destructure twice to get access to the logged in
+    // user's object
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    // We can now use userInfo which we destructured from getState to get the bearer token from
+    // userInfo so we can make the appropriate GET request without triggering the auth middleware
+    // from the backend.
+    const config = {
+      headers: {
+        // Authorization key needs no quotes
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    // We'll delete the user data in the backend by making a delete request. The delete
+    // request will send us a response object with a message property saying success
+    // but we don't need it so we'll just await)
+    await axios.delete(`/api/users/${id}`, config);
+
+    // we'll dispatch our success action
+    dispatch(userDeleteSuccess());
+  } catch (error) {
+    dispatch(userDeleteFailed(error));
+  }
+};
+
+export const userDeleteRequest = () => ({
+  type: ActionTypes.USER_DELETE_REQUEST,
+});
+
+export const userDeleteSuccess = () => ({
+  type: ActionTypes.USER_DELETE_SUCCESS,
+});
+
+export const userDeleteFailed = (error) => ({
+  type: ActionTypes.USER_DELETE_FAILED,
+  payload:
+    error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message,
+});
+
+export const updateUser = (user) => async (dispatch, getState) => {
+  try {
+    // dispatch our request
+    dispatch(userUpdateRequest());
+
+    // getState allows us to get our state. We destructure twice to get access to the logged in
+    // user's object
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    // We can now use userInfo which we destructured from getState to get the bearer token from
+    // userInfo so we can make the appropriate GET request without triggering the auth middleware
+    // from the backend.
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        // Authorization key needs no quotes
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    // We'll update the user document in the backend by making a put request.
+    // Our put request will return the updated document which we'll destructure as data
+    const { data } = await axios.put(`/api/users/${user._id}`, user, config);
+
+    // we'll dispatch our success action
+    dispatch(userUpdateSuccess());
+
+    // we'll also dispatch our details success action to update the userDetails state
+    // with whatever we just updated through our API put request
+    dispatch(userDetailsSuccess(data));
+  } catch (error) {
+    dispatch(userUpdateFailed(error));
+  }
+};
+
+export const userUpdateRequest = () => ({
+  type: ActionTypes.USER_UPDATE_REQUEST,
+});
+
+export const userUpdateSuccess = () => ({
+  type: ActionTypes.USER_UPDATE_SUCCESS,
+});
+
+export const userUpdateFailed = (error) => ({
+  type: ActionTypes.USER_UPDATE_FAILED,
+  payload:
+    error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message,
+});
+
+export const userUpdateReset = () => ({
+  type: ActionTypes.USER_UPDATE_RESET,
 });
