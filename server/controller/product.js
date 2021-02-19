@@ -24,4 +24,8 @@ const getProductById = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc  Fetch single product
+// @route  GET /api/product/:id
+// @access  Public
+
 export { getProducts, getProductById };
