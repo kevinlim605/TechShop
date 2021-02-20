@@ -4,7 +4,12 @@ import { Table, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { fetchProductList } from '../actions/products';
+import {
+  fetchProductList,
+  deleteProduct,
+  createProduct,
+  productCreateReset,
+} from '../actions/products';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -13,6 +18,20 @@ const ProductList = ({ history, match }) => {
   // mapStateToProps
   const productList = useSelector((state) => state.productList);
   const { loading, error, products } = productList;
+  const productDelete = useSelector((state) => state.productDelete);
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = productDelete;
+  const productCreate = useSelector((state) => state.productCreate);
+  const {
+    loading: loadingCreate,
+    error: errorCreate,
+    success: successCreate,
+    product: createdProduct,
+  } = productCreate;
+
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
@@ -20,28 +39,41 @@ const ProductList = ({ history, match }) => {
   const dispatch = useDispatch();
 
   // deleteHandler
-  const deleteHandler = () => {
+  const deleteHandler = (id) => {
     if (window.confirm('Are you sure')) {
-      // DELETE PRODUCTS
+      dispatch(deleteProduct(id));
     }
   };
 
-  // createProductHandler
-  const createProductHandler = (product) => {
-    // CREATE PRODUCT
-    console.log('hello');
+  const createProductHandler = () => {
+    dispatch(createProduct());
   };
 
   // componentDidMount
   useEffect(() => {
-    // check if user exists and user is admin. Then dispatch action to get list of products
-    if (userInfo && userInfo.isAdmin) {
-      dispatch(fetchProductList());
-      // else just redirect to login page
-    } else {
+    // We want to reset our productCreate state immediately
+    dispatch(productCreateReset());
+
+    // Check if user does not exist and if user is not admin If so, redirect to login page
+    if (!userInfo || !userInfo.isAdmin) {
       history.push('/login');
     }
-  }, [dispatch, history, userInfo]);
+
+    // Check if product was created. If so, we will redirect to the product admin edit page
+    if (successCreate) {
+      history.push(`/admin/product/${createdProduct._id}/edit`);
+      // else we want to receive our list of products
+    } else {
+      dispatch(fetchProductList());
+    }
+  }, [
+    dispatch,
+    history,
+    userInfo,
+    successDelete,
+    successCreate,
+    createdProduct,
+  ]);
   return (
     <>
       <Row className="align-items-center">
@@ -55,6 +87,10 @@ const ProductList = ({ history, match }) => {
           </Button>
         </Col>
       </Row>
+      {loadingDelete && <Loader />}
+      {errorDelete && <Message variant="danger">{errorDelete}</Message>}
+      {loadingCreate && <Loader />}
+      {errorCreate && <Message variant="danger">{errorCreate}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (

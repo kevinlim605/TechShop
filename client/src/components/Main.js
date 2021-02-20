@@ -16,6 +16,7 @@ import OrderPage from '../pages/Order';
 import UserListPage from '../pages/UserList';
 import UserEditPage from '../pages/UserEdit';
 import ProductListPage from '../pages/ProductList';
+import ProductEditPage from '../pages/ProductEdit';
 
 const Main = () => {
   return (
@@ -36,8 +37,9 @@ const Main = () => {
           // redirected from addToCart handler from a product page) */}
           <Route path="/cart/:id?" component={CartPage} />
           <Route path="/admin/userlist" component={UserListPage} />
-          <Route path="/admin/productlist" component={ProductListPage} />
           <Route path="/admin/user/:id/edit" component={UserEditPage} />
+          <Route path="/admin/productlist" component={ProductListPage} />
+          <Route path="/admin/product/:id/edit" component={ProductEditPage} />
           <Route exact path="/" component={HomePage} />
         </Container>
       </main>

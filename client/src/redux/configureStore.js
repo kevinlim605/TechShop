@@ -5,6 +5,9 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {
   productListReducer,
   productDetailsReducer,
+  productDeleteReducer,
+  productCreateReducer,
+  productUpdateReducer,
 } from '../reducers/products';
 import { cartReducer } from '../reducers/cart';
 import {
@@ -69,6 +72,9 @@ const ConfigureStore = () => {
     combineReducers({
       productList: productListReducer,
       productDetails: productDetailsReducer,
+      productDelete: productDeleteReducer,
+      productCreate: productCreateReducer,
+      productUpdate: productUpdateReducer,
       cart: cartReducer,
       userLogin: userLoginReducer,
       userRegister: userRegisterReducer,
