@@ -1,10 +1,10 @@
 import * as ActionTypes from '../actiontypes/products';
 import axios from 'axios';
 
-export const fetchProductList = () => async (dispatch) => {
+export const fetchProductList = (keyword = '') => async (dispatch) => {
   try {
     dispatch(productListRequest());
-    const { data } = await axios.get('/api/products');
+    const { data } = await axios.get(`/api/products?keyword=${keyword}`);
     dispatch(productListSuccess(data));
   } catch (error) {
     dispatch(productListFailed(error));

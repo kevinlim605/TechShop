@@ -6,7 +6,9 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { fetchProductList } from '../actions/products';
 
-const HomePage = () => {
+const HomePage = ({ match }) => {
+  const keyword = match.params.keyword;
+
   // useDispatch is used to call an action, similar to mapDispatchToProps lifecycle method
   const dispatch = useDispatch();
 
@@ -16,8 +18,8 @@ const HomePage = () => {
 
   // useEffect is used similar to componentDidMount lifecycle method
   useEffect(() => {
-    dispatch(fetchProductList());
-  }, [dispatch]); // must pass dispatch as a dependency as the second argument of useEffect in order to use useDispatch()
+    dispatch(fetchProductList(keyword));
+  }, [dispatch, keyword]); // must pass dispatch as a dependency as the second argument of useEffect in order to use useDispatch()
 
   return (
     <>

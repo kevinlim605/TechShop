@@ -6,7 +6,28 @@ import Product from '../models/product.js';
 // @access  Public
 
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
+  // req.query.keyword is how you can get query strings. ex.)
+  // if we make a get request to /api/products?phone, then req.query.keyword
+  // will return phone
+  const keyword = req.query.keyword
+    ? {
+        name: {
+          // $regex is a mongoose evaluation query operator that provides regular
+          // expression capabilities for pattern matching strings in queries.
+          // If our keyword was something like 'iph' it could match with iphone
+          $regex: req.query.keyword,
+          // $options is a mongoose evaluation query operator that can evaluate
+          // different ways depending on the options. 'i' for example, is for
+          // Case insensitivity to match upper and lower cases
+          $options: 'i',
+        },
+        // else if no keyword exists or is an empty string, then we'll return an
+        // empty object. That way, we know are getProducts handler will just return
+        // all of the product documents when we await Product.find() down below
+      }
+    : {};
+
+  const products = await Product.find(keyword);
   res.json(products);
 });
 
