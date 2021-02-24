@@ -14,6 +14,7 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import Message from '../components/Message';
 import { addToCart, removeFromCart } from '../actions/cart';
+import { addDecimals } from '../shared/addDecimals';
 
 // location is another route prop. It is an object which represents where the app is now,
 // or where you want it to go, or even where it was. It contains keys: key, pathname, search,
@@ -50,10 +51,6 @@ const Cart = ({ match, location, history }) => {
 
   const checkoutHandler = () => {
     history.push('/login?redirect=shipping');
-  };
-
-  const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2);
   };
 
   return (

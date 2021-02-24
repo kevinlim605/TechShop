@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,11 +24,14 @@ const ProductEdit = ({ match, history }) => {
   const [category, setCategory] = useState('');
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   // mapDispatchToProps
   const dispatch = useDispatch();
 
   // mapStateToProps
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, error, product } = productDetails;
   const productUpdate = useSelector((state) => state.productUpdate);
@@ -83,6 +87,50 @@ const ProductEdit = ({ match, history }) => {
     );
   };
 
+  const uploadFileHandler = async (e) => {
+    // e.target.files will be an array of files. In our case, we are only uploading
+    // one file, an image, so it will be the first item in the array
+    const file = e.target.files[0];
+    // initalize a FormData object. A FormData object lets you compile a set of
+    // key/value pairs to send using XMLHttpRequest. It is primarily intended for use
+    // in sending form data.
+    const formData = new FormData();
+    // FormData.append() appends a new value onto an existing key inside a
+    // FormData object, or adds the key if it does not already exist.
+    // We'll create a key of 'image' and set the value as the file
+    formData.append('image', file);
+    // we'll set the uploading component level state to true so that our loader activates
+    setUploading(true);
+
+    // We'll make our API request here
+    try {
+      // Create our config object here with our headers object
+      const config = {
+        headers: {
+          // We'll send the content type as multipart/form-data because we
+          // are sending a file in our post request
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer: ${userInfo.token}`,
+        },
+      };
+
+      // We'll send our formData in the post request, which will send us back the
+      // path in a response object which we will destructure as data
+      const { data } = await axios.post('/api/upload', formData, config);
+      // We'll set the image component level state to the path so that our UI will
+      // show the file path of the image we just uploaded
+      setImage(data);
+      // Set loading to false so that the loader stops rendering after we successfully
+      // uploaded our image
+      setUploading(false);
+    } catch (error) {
+      // output an error message to the console if there is an error
+      console.error(error);
+      // continuously show our loader if there is an error
+      setUploading(false);
+    }
+  };
+
   return (
     <>
       <Link to="/admin/productlist" className="btn btn-light my-3">
@@ -124,6 +172,13 @@ const ProductEdit = ({ match, history }) => {
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
               ></Form.Control>
+              <Form.File
+                id="image-file"
+                label="Choose File"
+                custom
+                onChange={uploadFileHandler}
+              ></Form.File>
+              {uploading && <Loader />}
             </Form.Group>
             <Form.Group controlId="brand">
               <Form.Label>Brand</Form.Label>

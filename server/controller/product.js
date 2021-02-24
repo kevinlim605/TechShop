@@ -106,10 +106,69 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc  Create new review
+// @route  POST /api/products/:id/reviews
+// @access  Private
+
+const createProductReview = asyncHandler(async (req, res) => {
+  // destructure consts from req.body object
+  const { rating, comment } = req.body;
+
+  // find product by id from API Url call and store in const
+  const product = await Product.findById(req.params.id);
+
+  // if product exists, we'll update the properties with the values we got from
+  // the req body
+  if (product) {
+    // check if the user already reviewed this particular product. Use the array method,
+    // .find(), on product.reviews and check if each review, 'r', has a user property,
+    // that matches with the user id from the request body
+    const alreadyReviewed = product.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+    // if alreadyReviewed === true, then we'll throw a new error
+    if (alreadyReviewed) {
+      res.status(400); // Bad Request
+      throw new Error('Product Already Reviewed');
+    }
+
+    const review = {
+      name: req.user.name,
+      // we could use shorthand but we want to convert the string to a number
+      rating: Number(rating),
+      // comment can be shorthand because we want it to be a string
+      comment,
+      user: req.user._id,
+    };
+
+    // We want to push the new review into the reviews array property of products document
+    product.reviews.push(review);
+
+    // We have a new number of reviews so we have to update that property as well
+    product.numReviews = product.reviews.length;
+
+    // We need to update the product's rating which we can do by calculating the average
+    // ratings of all the reviews
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+
+    // We need to save the updated product document
+    await product.save();
+
+    // new resource created and send back message
+    res.status(201).json({ message: 'Review Added' });
+  } else {
+    res.status(404); // not found
+    throw new Error('Product Not Found');
+  }
+});
+
 export {
   getProducts,
   getProductById,
   deleteProduct,
   createProduct,
   updateProduct,
+  createProductReview,
 };

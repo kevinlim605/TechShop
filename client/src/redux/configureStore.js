@@ -8,6 +8,7 @@ import {
   productDeleteReducer,
   productCreateReducer,
   productUpdateReducer,
+  productReviewCreateReducer,
 } from '../reducers/products';
 import { cartReducer } from '../reducers/cart';
 import {
@@ -23,7 +24,9 @@ import {
   orderCreateReducer,
   orderDetailsReducer,
   orderPayReducer,
+  orderDeliverReducer,
   orderListMyReducer,
+  orderListReducer,
 } from '../reducers/order';
 
 // const reducer = combineReducers({});
@@ -75,6 +78,7 @@ const ConfigureStore = () => {
       productDelete: productDeleteReducer,
       productCreate: productCreateReducer,
       productUpdate: productUpdateReducer,
+      productReviewCreate: productReviewCreateReducer,
       cart: cartReducer,
       userLogin: userLoginReducer,
       userRegister: userRegisterReducer,
@@ -86,7 +90,9 @@ const ConfigureStore = () => {
       orderCreate: orderCreateReducer,
       orderDetails: orderDetailsReducer,
       orderPay: orderPayReducer,
+      orderDeliver: orderDeliverReducer,
       orderListMy: orderListMyReducer,
+      orderList: orderListReducer,
     }),
     initialState,
     composeWithDevTools(applyMiddleware(thunk))

@@ -105,6 +105,30 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc  Update order to delivered
+// @route  PUT /api/orders/:id/deliver
+// @access  Private/Admin
+
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+
+  if (order) {
+    // We'll set the isPaid property to true
+    order.isDelivered = true;
+    // We'll set the paidAt property to the current date
+    order.deliveredAt = Date.now();
+
+    // We have to save the updated order in the database
+    const updatedOrder = await order.save();
+
+    // We'll return the updated order in our response object
+    res.json(updatedOrder);
+  } else {
+    res.status(404); // not found
+    throw new Error('Order Not Found');
+  }
+});
+
 // @desc  Get logged in user orders
 // @route  GET /api/orders/myorders
 // @access  Private
@@ -115,4 +139,22 @@ const getMyOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
-export { addOrderItems, getOrderById, updateOrderToPaid, getMyOrders };
+// @desc  Get all orders
+// @route  GET /api/orders
+// @access  Private/Admin
+
+const getOrders = asyncHandler(async (req, res) => {
+  // find all users in the Order model collection. We are going to populate
+  // in the user object property the properties of id and name only.
+  const orders = await Order.find({}).populate('user', 'id name');
+  res.json(orders);
+});
+
+export {
+  addOrderItems,
+  getOrderById,
+  updateOrderToPaid,
+  updateOrderToDelivered,
+  getMyOrders,
+  getOrders,
+};

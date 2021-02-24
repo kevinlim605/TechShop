@@ -2,13 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';
-import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { getOrderDetails, payOrder, orderPayReset } from '../actions/order';
+import {
+  getOrderDetails,
+  payOrder,
+  orderPayReset,
+  deliverOrder,
+  orderDeliverReset,
+} from '../actions/order';
+import { addDecimals } from '../shared/addDecimals';
 
-const Order = ({ match }) => {
+const Order = ({ match, history }) => {
   // order id from url
   const orderId = match.params.id;
 
@@ -16,20 +23,20 @@ const Order = ({ match }) => {
   const [sdkReady, setSdkReady] = useState(false);
 
   // mapStateToProps
+
   const orderDetails = useSelector((state) => state.orderDetails);
   const { order, loading, error } = orderDetails;
   const orderPay = useSelector((state) => state.orderPay);
   // We already defined loading above so we can rename our destructured consts like this
   // So we get consts loadingPay and successPay
   const { loading: loadingPay, success: successPay } = orderPay;
+  const orderDeliver = useSelector((state) => state.orderDeliver);
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
   // mapDispatchToProps
   const dispatch = useDispatch();
-
-  // Add Decimals
-  const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2);
-  };
 
   if (!loading) {
     // Calculate prices, we need strings to display proper decimal places
@@ -40,6 +47,10 @@ const Order = ({ match }) => {
 
   // componentDidMount
   useEffect(() => {
+    // if user is not logged in, we will redirect to login page
+    if (!userInfo) {
+      history.push('/login');
+    }
     const addPayPalScript = async () => {
       // destructure to get our client ID from paypal
       const { data: clientId } = await axios.get('/api/config/paypal');
@@ -62,11 +73,14 @@ const Order = ({ match }) => {
     };
 
     // check if order doesn't exist or if orderId does not match the ID in the url
-    // or if the pay was successful or if the pay was delivered.
+    // or if the pay was successful or if the paid, or if delivered.
     // if so, then we dispatch to get our most recent order details
-    if (!order || successPay || order._id !== orderId) {
+    if (!order || successPay || successDeliver || order._id !== orderId) {
       // dispatch our orderPayReset() action so that once we pay, it will stop refreshing
       dispatch(orderPayReset());
+      // dispatch our orderDeliverReset() action so that once its delivered,
+      // it will stop refreshing
+      dispatch(orderDeliverReset());
       // dispatch getOrderDetails to fetch the most recent order
       dispatch(getOrderDetails(orderId));
 
@@ -83,11 +97,15 @@ const Order = ({ match }) => {
         setSdkReady(true);
       }
     }
-  }, [dispatch, orderId, successPay, order]);
+  }, [dispatch, orderId, successPay, order, successDeliver, history, userInfo]);
 
   const successPaymentHandler = (paymentResult) => {
     console.log(paymentResult);
     dispatch(payOrder(orderId, paymentResult));
+  };
+
+  const deliverHandler = () => {
+    dispatch(deliverOrder(order));
   };
 
   return loading ? (
@@ -213,6 +231,23 @@ const Order = ({ match }) => {
                   )}
                 </ListGroup.Item>
               )}
+              {loadingDeliver && <Loader />}
+              {/* if user is admin and order is paid and order is not delivered,
+              then this button will show */}
+              {userInfo &&
+                userInfo.isAdmin &&
+                order.isPaid &&
+                !order.isDelivered && (
+                  <ListGroup.Item>
+                    <Button
+                      type="button"
+                      className="btn btn-block"
+                      onClick={deliverHandler}
+                    >
+                      Mark As Delivered
+                    </Button>
+                  </ListGroup.Item>
+                )}
             </ListGroup>
           </Card>
         </Col>

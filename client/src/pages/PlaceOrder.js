@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { createOrder } from '../actions/order';
+import { addDecimals } from '../shared/addDecimals';
 
 const PlaceOrder = ({ history }) => {
   // mapStateToProps
@@ -15,11 +16,6 @@ const PlaceOrder = ({ history }) => {
 
   // mapDispatchToProps
   const dispatch = useDispatch();
-
-  // Add Decimals
-  const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2);
-  };
 
   // Calculate prices, we need strings to display proper decimal places
   cart.itemsPrice = addDecimals(
