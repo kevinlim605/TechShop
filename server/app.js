@@ -51,8 +51,7 @@ app.get('/api/config/paypal', (req, res) =>
   res.send(process.env.PAYPAL_CLIENT_ID)
 );
 
-// client directory
-const client__dirname = __dirname.substring(0, __dirname.length - 7);
+console.log(__dirname);
 
 // uploads folder will not be accessible by the browser by default. We can make it
 // static by using express.static(root) so that it can be loaded in the browser.
@@ -62,19 +61,19 @@ const client__dirname = __dirname.substring(0, __dirname.length - 7);
 // ex.) path.join('/', 'users', 'joe', 'notes.txt') === '/users/joe/notes.txt'
 // __dirname is an environment variable that tells you the absolute path
 // of the directory containing the currently executing file
-// ex.) __dirname === '/Users/Kevin/ProjectFolder/TechShop/server'
+// ex.) __dirname === '/Users/Kevin/ProjectFolder/TechShop/'
 // Essentially, we are performing this:
-// express.static('/Users/Kevin/ProjectFolder/TechShop/server/uploads')
+// express.static('/Users/Kevin/ProjectFolder/TechShop/uploads')
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Production Mode
 if (process.env.NODE_ENV === 'production') {
   // make build folder static folder
-  app.use(express.static(path.join(client__dirname, '/client/build')));
+  app.use(express.static(path.join(__dirname, '/client/build')));
   // .get('*') gets any route that's not our API, and we point to our build folder's
   // html file. We use res.sendFile() which will transfer a file at the given path.
   app.get('*', (req, res) =>
-    res.sendFile(path.resolve(client__dirname, 'client', 'build', 'index.html'))
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
   );
 }
 
