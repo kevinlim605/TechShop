@@ -21,6 +21,7 @@ import {
 import Rating from '../components/Rating';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import Meta from '../components/Meta';
 
 // history and match are props passed by route. match contains the the matched path information
 // and parameters in the URL. History is the history API which is used to navigate user to
@@ -89,6 +90,7 @@ const ProductPage = ({ history, match }) => {
         <Message variant="danger">{error}</Message>
       ) : (
         <>
+          <Meta title={product.name} />
           <Row>
             <Col class="product-page-section" md={6}>
               <Image src={product.image} alt={product.name} fluid />
