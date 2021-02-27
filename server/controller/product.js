@@ -6,6 +6,15 @@ import Product from '../models/product.js';
 // @access  Public
 
 const getProducts = asyncHandler(async (req, res) => {
+  // Paginate functionality requires a static number called pageSize which
+  // refers to how many products we want to show on one page.
+  const pageSize = 10;
+  // page refers to whatever the page is in the query
+  // ex.) /api/products?pageNumber=3 so the query is 3
+  // we'll grab the query, convert it to a number and set it as page
+  // OR we'll set it to 1 if it isn't defined in the query
+  const page = Number(req.query.pageNumber) || 1;
+
   // req.query.keyword is how you can get query strings. ex.)
   // if we make a get request to /api/products?phone, then req.query.keyword
   // will return phone
@@ -27,8 +36,29 @@ const getProducts = asyncHandler(async (req, res) => {
       }
     : {};
 
-  const products = await Product.find(keyword);
-  res.json(products);
+  // we'll set the total count of products by searching through our Product model
+  // and use a mongoose countDocuments method to actually count the number of products.
+  // it takes an argument of a keyword, which we'll pass in our keyword if we have one.
+  // if keyword is set to empty object, it will just count all the documents
+  const count = await Product.countDocuments(keyword);
+  // We'll also add a limit to the number of product documents we want returned. We can
+  // do this by using the mongoose .limit() method on our Product model. We'll limit
+  // the number of product documents returned to the pageSize.
+  // ex.) If we only want 10 documents returned on a single page, then we do .limit(10)
+  // to return only 10 product documents.
+  // However, if we're on different page than page 1, then we want the next 10 documents
+  // returned. ex.) we don't want documents 1-10, we want documents 11-20 from our database
+  // Therefore, we can find that number using the pageSize multiplied by the page minus 1
+  // and the use mongoose .skip method on our product model to skip a number of documents
+  const products = await Product.find(keyword)
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  // We will also return the page and the pages. We can define pages by using
+  // the math method, .ceil() to round up the count (number of documents returned) divided
+  // by the pageSize. Ex.) if we had 45 documents returned in count and a pageSize of 10,
+  // then we obviously have 5 pages worth of products to show.
+  res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
 
 // @desc  Fetch single product

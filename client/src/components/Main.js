@@ -39,10 +39,22 @@ const Main = () => {
           <Route path="/cart/:id?" component={CartPage} />
           <Route path="/admin/userlist" component={UserListPage} />
           <Route path="/admin/user/:id/edit" component={UserEditPage} />
-          <Route path="/admin/productlist" component={ProductListPage} />
+          <Route exact path="/admin/productlist" component={ProductListPage} />
+          <Route
+            exact
+            path="/admin/productlist/:pageNumber"
+            component={ProductListPage}
+          />
           <Route path="/admin/product/:id/edit" component={ProductEditPage} />
           <Route path="/admin/orderlist" component={OrderListPage} />
-          <Route path="/search/:keyword" component={HomePage} />
+          {/* We set our path when we create a different route for our home page */}
+          <Route exact path="/search/:keyword" component={HomePage} />
+          <Route exact path="/page/:pageNumber" component={HomePage} />
+          <Route
+            exact
+            path="/search/:keyword/page/:pageNumber"
+            component={HomePage}
+          />
           <Route exact path="/" component={HomePage} />
         </Container>
       </main>

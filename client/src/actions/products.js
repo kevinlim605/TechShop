@@ -1,10 +1,28 @@
 import * as ActionTypes from '../actiontypes/products';
 import axios from 'axios';
 
-export const fetchProductList = (keyword = '') => async (dispatch) => {
+export const fetchProductList = (keyword = '', pageNumber = '') => async (
+  dispatch
+) => {
   try {
     dispatch(productListRequest());
-    const { data } = await axios.get(`/api/products?keyword=${keyword}`);
+    // when you have two query strings in a API request then you have to separate with
+    // an ampersand. Please note that query strings do not affect the route defined
+    // in our backend. ex.)
+    // const { data } = await axios.get(
+    //   `/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
+    // );
+    // is the same as
+    // const { data } = await axios.get(
+    //   `/api/products`
+    // );
+    // in our backend, but we still pass in our keyword and pageNumber as queries
+    // in our request object ex.) req.params.keyword and req.params.pageNumber
+    // Our data that we get back from our GET API request will return products, page, as well
+    // as well as pages
+    const { data } = await axios.get(
+      `/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
+    );
     dispatch(productListSuccess(data));
   } catch (error) {
     dispatch(productListFailed(error));
