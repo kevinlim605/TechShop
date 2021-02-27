@@ -9,6 +9,7 @@ import {
   productCreateReducer,
   productUpdateReducer,
   productReviewCreateReducer,
+  productTopRatedReducer,
 } from '../reducers/products';
 import { cartReducer } from '../reducers/cart';
 import {
@@ -79,6 +80,7 @@ const ConfigureStore = () => {
       productCreate: productCreateReducer,
       productUpdate: productUpdateReducer,
       productReviewCreate: productReviewCreateReducer,
+      productTopRated: productTopRatedReducer,
       cart: cartReducer,
       userLogin: userLoginReducer,
       userRegister: userRegisterReducer,

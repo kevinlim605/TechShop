@@ -214,6 +214,18 @@ const createProductReview = asyncHandler(async (req, res) => {
     throw new Error('Product Not Found');
   }
 });
+// @desc  Get top rated products
+// @route  GET /api/products/top
+// @access  Public
+
+const getTopProducts = asyncHandler(async (req, res) => {
+  // We can sort our product documents using mongoose .sort() method.
+  // It takes one parameter, an object defining the sorting order.
+  // 1 is ascending order, -1 is descending order, so our products will
+  // be listed in descending order. We will also limit only the first 3 products returned
+  const products = await Product.find({}).sort({ rating: -1 }).limit(3);
+  res.json(products);
+});
 
 export {
   getProducts,
@@ -222,4 +234,5 @@ export {
   createProduct,
   updateProduct,
   createProductReview,
+  getTopProducts,
 };

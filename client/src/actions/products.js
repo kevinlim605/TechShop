@@ -299,3 +299,32 @@ export const productCreateReviewFailed = (error) => ({
 export const productCreateReviewReset = () => ({
   type: ActionTypes.PRODUCT_CREATE_REVIEW_RESET,
 });
+
+export const listTopProducts = () => async (dispatch) => {
+  try {
+    dispatch(productTopRequest());
+
+    const { data } = await axios.get(`/api/products/top`);
+
+    dispatch(productTopSuccess(data));
+  } catch (error) {
+    dispatch(productTopFailed(error));
+  }
+};
+
+export const productTopRequest = () => ({
+  type: ActionTypes.PRODUCT_TOP_REQUEST,
+});
+
+export const productTopSuccess = (data) => ({
+  type: ActionTypes.PRODUCT_TOP_SUCCESS,
+  payload: data,
+});
+
+export const productTopFailed = (error) => ({
+  type: ActionTypes.PRODUCT_TOP_FAILED,
+  payload:
+    error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message,
+});
