@@ -11,7 +11,6 @@ import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // my routes
-import indexRouter from './routes/index.js';
 import userRouter from './routes/user.js';
 import productRouter from './routes/product.js';
 import orderRouter from './routes/order.js';
@@ -42,7 +41,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // my routes
-app.use('/', indexRouter);
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);
@@ -52,6 +50,9 @@ app.use('/api/upload', uploadRouter);
 app.get('/api/config/paypal', (req, res) =>
   res.send(process.env.PAYPAL_CLIENT_ID)
 );
+
+// client directory
+const client__dirname = __dirname.substring(0, __dirname.length - 7);
 
 // uploads folder will not be accessible by the browser by default. We can make it
 // static by using express.static(root) so that it can be loaded in the browser.
@@ -65,6 +66,17 @@ app.get('/api/config/paypal', (req, res) =>
 // Essentially, we are performing this:
 // express.static('/Users/Kevin/ProjectFolder/TechShop/server/uploads')
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+// Production Mode
+if (process.env.NODE_ENV === 'production') {
+  // make build folder static folder
+  app.use(express.static(path.join(client__dirname, '/client/build')));
+  // .get('*') gets any route that's not our API, and we point to our build folder's
+  // html file. We use res.sendFile() which will transfer a file at the given path.
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(client__dirname, 'client', 'build', 'index.html'))
+  );
+}
 
 // my own catch 404 error handler middleware
 app.use(notFound);
