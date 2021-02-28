@@ -1,6 +1,9 @@
 {
   "name": "server",
   "version": "0.0.0",
+  "engines": {
+    "node": "14.15.4"
+  },
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,8 +11,8 @@
     "server": "nodemon ./server/bin/www",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "data:import": "node seeder",
-    "data:destroy": "node seeder -d",
+    "data:import": "node ./server/seeder",
+    "data:destroy": "node ./server/seeder -d",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "dependencies": {
